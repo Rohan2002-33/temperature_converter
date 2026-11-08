@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/app_theme.dart';
-import 'screens/converter_screen.dart';
+import 'screens/splash_screen.dart';
 
 class TemperatureConverterApp extends StatelessWidget {
   const TemperatureConverterApp({super.key});
@@ -12,7 +12,7 @@ class TemperatureConverterApp extends StatelessWidget {
       title: 'Temperature Converter',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const ConverterScreen(),
+      home: const SplashScreen(),
     );
   }
 }
