@@ -54,7 +54,6 @@ class _ConverterScreenState extends State<ConverterScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<ConverterProvider>();
     final type = provider.type;
-    final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
@@ -81,96 +80,131 @@ class _ConverterScreenState extends State<ConverterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'Quick conversion',
-                      style: textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Enter a value, pick a type and tap Calculate.',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: scheme.outline,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(16),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              TextFormField(
-                                controller: _controller,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                  decimal: true,
-                                  signed: true,
-                                ),
-                                textInputAction: TextInputAction.done,
-                                onFieldSubmitted: (_) => _onCalculate(),
-                                onChanged: (_) => context
-                                    .read<ConverterProvider>()
-                                    .clearResult(),
-                                validator: TemperatureConverter.validateInput,
-                                decoration: InputDecoration(
-                                  labelText: 'Degrees',
-                                  hintText: 'Enter temperature',
-                                  prefixIcon:
-                                      const Icon(Icons.thermostat_rounded),
-                                  suffixText: type.fromUnit,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              InputDecorator(
-                                decoration: const InputDecoration(
-                                  labelText: 'Type',
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 4,
-                                  ),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<ConversionType>(
-                                    value: type,
-                                    isExpanded: true,
-                                    borderRadius: BorderRadius.circular(14),
-                                    icon: const Icon(
-                                      Icons.keyboard_arrow_down_rounded,
-                                    ),
-                                    items: ConversionType.values
-                                        .map(
-                                          (item) => DropdownMenuItem(
-                                            value: item,
-                                            child: Text(
-                                              item.label,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _controller,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                        signed: true,
+                                      ),
+                                      textInputAction: TextInputAction.done,
+                                      onFieldSubmitted: (_) => _onCalculate(),
+                                      onChanged: (_) => context
+                                          .read<ConverterProvider>()
+                                          .clearResult(),
+                                      validator:
+                                          TemperatureConverter.validateInput,
+                                      decoration: InputDecoration(
+                                        labelText: 'Degrees',
+                                        hintText: 'Enter temperature',
+                                        filled: false,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          vertical: 8,
+                                        ),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: scheme.outlineVariant,
                                           ),
-                                        )
-                                        .toList(),
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        context
-                                            .read<ConverterProvider>()
-                                            .setType(value);
-                                      }
-                                    },
+                                        ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: scheme.outlineVariant,
+                                          ),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: scheme.primary,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: InputDecorator(
+                                      decoration: InputDecoration(
+                                        labelText: 'Type',
+                                        filled: false,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                        ),
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: scheme.outlineVariant,
+                                          ),
+                                        ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: scheme.outlineVariant,
+                                          ),
+                                        ),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<ConversionType>(
+                                          value: type,
+                                          isExpanded: true,
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          icon: const Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                          ),
+                                          items: ConversionType.values
+                                              .map(
+                                                (item) => DropdownMenuItem(
+                                                  value: item,
+                                                  child: Text(
+                                                    item.fromUnit == '°F'
+                                                        ? 'Fahrenheit'
+                                                        : 'Celsius',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              context
+                                                  .read<ConverterProvider>()
+                                                  .setType(value);
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              _ResultPanel(result: provider.result),
+                              const SizedBox(height: 16),
+                              FilledButton(
+                                onPressed: _onCalculate,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF087FF5),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
+                                child: const Text('Convert'),
                               ),
-                              const SizedBox(height: 16),
-                              _ResultPanel(result: provider.result),
-                              const SizedBox(height: 20),
-                              FilledButton.icon(
-                                onPressed: _onCalculate,
-                                icon: const Icon(Icons.calculate_rounded),
-                                label: const Text('Calculate'),
-                              ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               TextButton(
                                 onPressed: _onReset,
                                 child: const Text('Reset'),
@@ -202,14 +236,12 @@ class _ResultPanel extends StatelessWidget {
     final hasResult = result != null;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: hasResult
-            ? scheme.primaryContainer.withValues(alpha: 0.6)
-            : const Color(0xFFF7F9FC),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: hasResult ? scheme.primary : scheme.outlineVariant,
+        border: Border(
+          bottom: BorderSide(
+            color: hasResult ? scheme.primary : scheme.outlineVariant,
+          ),
         ),
       ),
       child: Column(
@@ -223,12 +255,12 @@ class _ResultPanel extends StatelessWidget {
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: Text(
-              result ?? '—',
+              result ?? '',
               key: ValueKey<String>(result ?? 'empty'),
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: hasResult ? scheme.primary : scheme.outline,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: scheme.onSurface,
               ),
             ),
           ),

@@ -7,7 +7,7 @@ import '../services/temperature_converter.dart';
 class ConverterProvider extends ChangeNotifier {
   static const int _maxHistory = 50;
 
-  ConversionType _type = ConversionType.celsiusToFahrenheit;
+  ConversionType _type = ConversionType.fahrenheitToCelsius;
   String? _result;
   final List<ConversionRecord> _history = [];
 

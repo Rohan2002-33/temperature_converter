@@ -17,10 +17,22 @@ Future<void> openConverter(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('convert button uses the reference blue', (tester) async {
+    await openConverter(tester);
+
+    final button = tester.widget<FilledButton>(find.widgetWithText(
+      FilledButton,
+      'Convert',
+    ));
+    final background = button.style?.backgroundColor?.resolve({});
+
+    expect(background, const Color(0xFF087FF5));
+  });
+
   testWidgets('shows error when field is empty', (tester) async {
     await openConverter(tester);
 
-    await tester.tap(find.text('Calculate'));
+    await tester.tap(find.text('Convert'));
     await tester.pump();
 
     expect(find.text('Please enter a temperature value.'), findsOneWidget);
@@ -30,7 +42,7 @@ void main() {
     await openConverter(tester);
 
     await tester.enterText(find.byType(TextFormField), 'abc');
-    await tester.tap(find.text('Calculate'));
+    await tester.tap(find.text('Convert'));
     await tester.pump();
 
     expect(find.text('Please enter a valid number.'), findsOneWidget);
@@ -39,8 +51,13 @@ void main() {
   testWidgets('converts Celsius to Fahrenheit', (tester) async {
     await openConverter(tester);
 
+    await tester.tap(find.byType(DropdownButton<ConversionType>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Celsius').last);
+    await tester.pumpAndSettle();
+
     await tester.enterText(find.byType(TextFormField), '100');
-    await tester.tap(find.text('Calculate'));
+    await tester.tap(find.text('Convert'));
     await tester.pumpAndSettle();
 
     expect(find.text('212.00 °F'), findsOneWidget);
@@ -51,11 +68,11 @@ void main() {
 
     await tester.tap(find.byType(DropdownButton<ConversionType>));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(ConversionType.fahrenheitToCelsius.label).last);
+    await tester.tap(find.text('Fahrenheit').last);
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextFormField), '212');
-    await tester.tap(find.text('Calculate'));
+    await tester.tap(find.text('Convert'));
     await tester.pumpAndSettle();
 
     expect(find.text('100.00 °C'), findsOneWidget);
